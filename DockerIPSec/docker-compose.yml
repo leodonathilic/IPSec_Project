@@ -14,7 +14,7 @@ services:
       - "./exchange/:/exchange_alice/"
     networks:
       syd_tp_001_ipsec_network:
-        ipv4_address: 10.0.0.100
+        ipv4_address: 10.0.0.101
 
   syd_tp_001_ipsec_bob:
     container_name: syd_tp_001_ipsec_bob
@@ -25,9 +25,15 @@ services:
     stdin_open: true
     tty: true
     restart: unless-stopped  
+    ports:
+      - 1194:1194/udp
+
+    cap_add:
+      - CAP_SYS_ADMIN   
+      - NET_ADMIN 
     networks:
-      syd_tp_001_ipsec_network:
-        ipv4_address: 10.0.0.200
+      syd_tp_002_ipsec_network:
+        ipv4_address: 10.0.0.201
     volumes: 
       - "./exchange/:/exchange_bob/"
 
@@ -36,4 +42,12 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 10.0.0.0/24
+        - subnet: 10.0.0.100/30
+          gateway:  10.0.0.102
+
+  syd_tp_002_ipsec_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.200/30
+          gateway:  10.0.0.202
