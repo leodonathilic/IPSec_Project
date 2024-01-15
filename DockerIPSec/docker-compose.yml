@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  syd_tp_001_ipsec_alice:
+    container_name: syd_tp_001_ipsec_alice
+    privileged: true
+    build:
+      context: './ALICE/'
+    image: sydacademy/syd_tp_001_ipsec_alice
+    stdin_open: true
+    tty: true   
+    restart: unless-stopped
+    volumes: 
+      - "./exchange/:/exchange_alice/"
+    networks:
+      syd_tp_001_ipsec_network:
+        ipv4_address: 10.0.0.100
+
+  syd_tp_001_ipsec_bob:
+    container_name: syd_tp_001_ipsec_bob
+    privileged: true
+    build:
+      context: './BOB/'
+    image: sydacademy/syd_tp_001_ipsec_bob
+    stdin_open: true
+    tty: true
+    restart: unless-stopped  
+    networks:
+      syd_tp_001_ipsec_network:
+        ipv4_address: 10.0.0.200
+    volumes: 
+      - "./exchange/:/exchange_bob/"
+
+networks:
+  syd_tp_001_ipsec_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24
