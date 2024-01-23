@@ -1,0 +1,69 @@
+services:
+  syd_tp_001_open_vpn_alice:
+    container_name: tp_ipsec_alice
+    privileged: true
+    build:
+      context: './ALICE/'
+    image: sydacademy/tp_ipsec_alice
+    stdin_open: true
+    tty: true   
+    restart: unless-stopped
+    volumes: 
+      - "./exchange/:/exchange_alice/"
+    networks:
+      syd_tp_001_open_vpn_network_1:
+        ipv4_address: 192.168.111.2
+
+
+  syd_tp_001_open_vpn_bob:
+    container_name: tp_ipsec_bob
+    privileged: true
+    build:
+      context: './BOB/'
+    image: sydacademy/tp_ipsec_bob
+    stdin_open: true
+    tty: true
+    restart: unless-stopped  
+    ports:
+      - 1194:1194/udp
+
+    cap_add:
+      - CAP_SYS_ADMIN   
+      - NET_ADMIN 
+    networks:
+      syd_tp_001_open_vpn_network_2:
+        ipv4_address: 192.168.112.2
+    volumes: 
+      - "./exchange/:/exchange_bob/"
+
+  syd_tp_001_open_vpn_eve:
+    container_name: tp_ipsec_eve
+    privileged: true
+    build:
+      context: './EVE/'
+    image: sydacademy/tp_ipsec_eve
+    stdin_open: true
+    tty: true
+    restart: unless-stopped      
+    networks:
+      syd_tp_001_open_vpn_network_1:
+        ipv4_address: 192.168.111.3
+      syd_tp_001_open_vpn_network_2:
+        ipv4_address: 192.168.112.3
+    volumes: 
+      - "./exchange/:/exchange_eve/"
+
+networks:
+  syd_tp_001_open_vpn_network_1:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 192.168.111.0/24
+         gateway: 192.168.111.1
+  syd_tp_001_open_vpn_network_2:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 192.168.112.0/24
+         gateway: 192.168.112.1 
+  
